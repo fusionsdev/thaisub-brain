@@ -1,0 +1,14 @@
+# Vault app config (machine-local)
+.obsidian/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp editor files
+*.swp
+*~
+# audio attachments — too heavy for git; vault keeps local copies, web hosts mp3
+Courses/*/attachments/
+YouTube/attachments/

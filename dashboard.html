@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUSION-CORE Command Center</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #121829;
+    --card2: #1a2138;
+    --border: #1e2a4a;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --accent: #3b82f6;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --cyan: #06b6d4;
+    --orange: #f97316;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Noto Sans Thai', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 28px;
+  }
+  .header h1 {
+    font-size: 24px; font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .header-right { display: flex; gap: 16px; align-items: center; }
+  .clock { font-size: 14px; color: var(--cyan); font-family: monospace; }
+  .pill {
+    padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pill.green { background: rgba(16,185,129,.15); color: var(--green); }
+  .pill.green .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .pill.red { background: rgba(239,68,68,.15); color: var(--red); }
+  .pill.red .dot { background: var(--red); }
+  .pill.yellow { background: rgba(245,158,11,.15); color: var(--yellow); }
+  .pill.yellow .dot { background: var(--yellow); }
+
+  /* Grid */
+  .grid { display: grid; gap: 16px; }
+  .row1 { grid-template-columns: 1fr 1fr 1fr; }
+  .row2 { grid-template-columns: 2fr 1fr; margin-top: 16px; }
+  .row3 { grid-template-columns: 1fr 1fr 1fr; margin-top: 16px; }
+  .row4 { grid-template-columns: 1fr 1fr; margin-top: 16px; }
+
+  @media (max-width: 900px) {
+    .row1, .row2, .row3, .row4 { grid-template-columns: 1fr; }
+  }
+
+  /* Card */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-title {
+    font-size: 13px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title .icon { font-size: 18px; }
+
+  /* Machine cards */
+  .machine { cursor: pointer; }
+  .machine h2 { font-size: 16px; margin-bottom: 4px; }
+  .machine .ip { color: var(--muted); font-size: 12px; font-family: monospace; margin-bottom: 14px; }
+  .spec-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .spec-row:last-child { border: none; }
+  .spec-row .label { color: var(--muted); }
+  .spec-row .val { font-weight: 600; }
+
+  /* Progress bars */
+  .bar { height: 6px; background: var(--card2); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width .5s; }
+
+  /* Mini stats */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .stat { background: var(--card2); border-radius: 10px; padding: 12px; text-align: center; }
+  .stat .num { font-size: 22px; font-weight: 800; }
+  .stat .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* News feed */
+  .news-item {
+    padding: 12px; background: var(--card2); border-radius: 10px;
+    margin-bottom: 8px; border-left: 3px solid var(--accent);
+    transition: transform .15s;
+  }
+  .news-item:hover { transform: translateX(4px); }
+  .news-item .title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .news-item .meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; }
+  .news-item .source { color: var(--cyan); }
+  .news-item .ai-tag { background: rgba(139,92,246,.2); color: var(--purple); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+
+  /* Pipeline */
+  .pipeline-step { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .pipeline-step:last-child { border: none; }
+  .step-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .step-info { flex: 1; }
+  .step-info .name { font-size: 13px; font-weight: 600; }
+  .step-info .detail { font-size: 11px; color: var(--muted); }
+
+  /* LLM */
+  .model-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    margin: 4px 0;
+  }
+  .model-badge.gemini { background: rgba(16,185,129,.15); color: var(--green); }
+  .model-badge.local { background: rgba(99,102,241,.15); color: #818cf8; }
+  .model-badge.api { background: rgba(245,158,11,.15); color: var(--yellow); }
+
+  /* Quick actions */
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn {
+    padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card2); color: var(--text); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); background: rgba(59,130,246,.1); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn.primary:hover { background: #2563eb; }
+
+  /* Graph */
+  .spark {
+    height: 40px; display: flex; align-items: end; gap: 2px; margin-top: 8px;
+  }
+  .spark .col { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; opacity: .6; }
+
+  /* Tolaria */
+  .vault-tree { font-size: 13px; line-height: 1.8; }
+  .vault-tree .folder { color: var(--yellow); }
+  .vault-tree .file { color: var(--text); }
+  .vault-tree .count { color: var(--muted); font-size: 11px; }
+
+  /* Footer */
+  .footer {
+    text-align: center; color: var(--muted); font-size: 12px; margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div>
+    <h1>🧠 FUSION-CORE Command Center</h1>
+    <div class="sub">AI Cluster Dashboard · 3 nodes · 144 GB total RAM · RTX 3090 24GB</div>
+  </div>
+  <div class="header-right">
+    <div class="pill green"><span class="dot"></span> All Systems Operational</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<!-- ====== ROW 1: MACHINE STATUS ====== -->
+<div class="grid row1">
+
+  <!-- FUSION-CORE -->
+  <div class="card machine">
+    <div class="card-title">
+      <span>🔥 FUSION-CORE</span>
+      <span class="pill green"><span class="dot"></span> Online</span>
+    </div>
+    <h2>Intel 285K + RTX 3090</h2>
+    <div class="ip">192.168.1.101</div>
+    <div class="spec-row">
+      <span class="label">GPU</span>
+      <span class="val">RTX 3090 · 24GB</span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:28%; background: var(--green)"></div></div>
+    <div style="font-size:11px; color:var(--muted); margin-top:2px">VRAM: 6.7GB / 24GB used (28%)</div>
+
+    <div class="spec-row" style="margin-top:8px">
+      <span class="label">RAM</span>
+      <span class="val">96 GB</span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:35%; background: var(--cyan)"></div></div>
+    <div style="font-size:11px; color:var(--muted); margin-top:2px">33.6GB / 96GB used</div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" style="color:var(--green)">vLLM</div><div class="lbl">Qwen3-30B-A3B</div></div>
+      <div class="stat"><div class="num" style="color:var(--purple)">647</div><div class="lbl">บทแปลแล้ว</div></div>
+    </div>
+  </div>
+
+  <!-- Oracle-NODE -->
+  <div class="card machine">
+    <div class="card-title">
+      <span>💻 ORACLE-NODE</span>
+      <span class="pill green"><span class="dot"></span> Online</span>
+    </div>
+    <h2>AMD Ryzen 9 5950X</h2>
+    <div class="ip">localhost · WSL2</div>
+    <div class="spec-row">
+      <span class="label">CPU</span>
+      <span class="val">16-core / 32-thread</span>
+    </div>
+    <div class="spec-row">
+      <span class="label">RAM</span>
+      <span class="val">47 GB</span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:32%; background: var(--cyan)"></div></div>
+    <div style="font-size:11px; color:var(--muted); margin-top:2px">15GB / 47GB used</div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" style="color:var(--accent)">Hermes</div><div class="lbl">Agent Active</div></div>
+      <div class="stat"><div class="num" style="color:var(--orange)">DeepSeek</div><div class="lbl">API Bridge</div></div>
+    </div>
+  </div>
+
+  <!-- Mac mini -->
+  <div class="card machine">
+    <div class="card-title">
+      <span>🖥️ Mac mini M4</span>
+      <span class="pill green"><span class="dot"></span> 24/7 Online</span>
+    </div>
+    <h2>Apple M4 · 16GB</h2>
+    <div class="ip">tailscale · 100.x.x.x</div>
+    <div class="spec-row">
+      <span class="label">Uptime</span>
+      <span class="val" style="color:var(--green)">14 วัน 3 ชม.</span>
+    </div>
+    <div class="spec-row">
+      <span class="label">RAM</span>
+      <span class="val">16 GB</span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width:42%; background: var(--orange)"></div></div>
+    <div style="font-size:11px; color:var(--muted); margin-top:2px">6.7GB / 16GB used</div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" style="color:var(--red)">📺 Jellyfin</div><div class="lbl">Streaming</div></div>
+      <div class="stat"><div class="num" style="color:var(--yellow)">📰</div><div class="lbl">News Curator</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ROW 2: NEWS + PIPELINE ====== -->
+<div class="grid row2">
+
+  <!-- News Curator -->
+  <div class="card">
+    <div class="card-title">
+      <span>📰 Daily News Briefing — สรุปข่าววันนี้</span>
+      <span style="color:var(--cyan); font-size:12px">08 ส.ค. 2026 · 06:00 น.</span>
+    </div>
+
+    <div class="news-item" style="border-left-color: var(--purple)">
+      <div class="title">🤖 OpenAI เปิดตัว GPT-5.2 รองรับ multimodal แบบเรียลไทม์</div>
+      <div class="meta">
+        <span class="source">TechCrunch</span>
+        <span class="ai-tag">AI สรุปแล้ว ✨</span>
+        <span>• 2 ชม.ที่แล้ว</span>
+      </div>
+    </div>
+
+    <div class="news-item" style="border-left-color: var(--green)">
+      <div class="title">⚡ NVIDIA ปล่อย Parakeet 2.0 STT เร็วกว่า Whisper 3 เท่า</div>
+      <div class="meta">
+        <span class="source">Hacker News</span>
+        <span class="ai-tag">AI สรุปแล้ว ✨</span>
+        <span>• 4 ชม.ที่แล้ว</span>
+      </div>
+    </div>
+
+    <div class="news-item" style="border-left-color: var(--orange)">
+      <div class="title">🔥 Claude Code 4.8 เพิ่ม agentic loop + MCP ในตัว</div>
+      <div class="meta">
+        <span class="source">Reddit r/MachineLearning</span>
+        <span class="ai-tag">AI สรุปแล้ว ✨</span>
+        <span>• 6 ชม.ที่แล้ว</span>
+      </div>
+    </div>
+
+    <div class="news-item" style="border-left-color: var(--cyan)">
+      <div class="title">💰 DeepSeek V4-Pro ราคาถูกลง 30% — เหมาะกับ batch translation</div>
+      <div class="meta">
+        <span class="source">Vercel Blog</span>
+        <span class="ai-tag">AI สรุปแล้ว ✨</span>
+        <span>• 8 ชม.ที่แล้ว</span>
+      </div>
+    </div>
+
+    <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center">
+      <span style="font-size:12px; color:var(--muted)">12 บทความวันนี้ · จาก 6 แหล่ง</span>
+      <button class="btn" style="font-size:12px; padding:6px 12px">ดูทั้งหมด →</button>
+    </div>
+  </div>
+
+  <!-- Pipeline Status -->
+  <div class="card">
+    <div class="card-title">
+      <span>🎬 Translation Pipeline</span>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px">
+        <span style="color:var(--muted)">ความคืบหน้ารวม</span>
+        <span style="font-weight:700">18 / 647 บท (2.8%)</span>
+      </div>
+      <div class="bar" style="height:8px"><div class="bar-fill" style="width:2.8%; background:linear-gradient(90deg, var(--green), var(--cyan))"></div></div>
+    </div>
+
+    <div class="pipeline-step">
+      <div class="step-icon" style="background:rgba(16,185,129,.15)">🎬</div>
+      <div class="step-info">
+        <div class="name">AI Automations & Agent Templates</div>
+        <div class="detail">6 / 141 บท · ⏱️ รอต่อ ~12 ชม.</div>
+      </div>
+    </div>
+
+    <div class="pipeline-step">
+      <div class="step-icon" style="background:rgba(139,92,246,.15)">📖</div>
+      <div class="step-info">
+        <div class="name">NoeAI Premium Courses</div>
+        <div class="detail">12 / 126 บท · ✅ พร้อมเสียงไทย</div>
+      </div>
+    </div>
+
+    <div class="pipeline-step">
+      <div class="step-icon" style="background:rgba(245,158,11,.15)">📊</div>
+      <div class="step-info">
+        <div class="name">Google Ads PPC</div>
+        <div class="detail">0 / 380 บท · ⏳ รอในคิว</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="font-size:12px; color:var(--muted); margin-bottom:6px">Throughput (tokens/sec) — 7 วันล่าสุด</div>
+      <div class="spark">
+        <div class="col" style="height:30%"></div>
+        <div class="col" style="height:45%"></div>
+        <div class="col" style="height:60%"></div>
+        <div class="col" style="height:80%"></div>
+        <div class="col" style="height:55%"></div>
+        <div class="col" style="height:90%; background:var(--green)"></div>
+        <div class="col" style="height:75%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ROW 3: LLM GATEWAY + JELLYFIN + TOLARIA ====== -->
+<div class="grid row3">
+
+  <!-- LLM Gateway -->
+  <div class="card">
+    <div class="card-title">
+      <span>🧠 LLM Gateway</span>
+      <span class="pill green"><span class="dot"></span> Active</span>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div class="model-badge local" style="display:flex; justify-content:space-between; width:100%">
+        <span>🖥️ Qwen3-30B-A3B AWQ (Local)</span>
+        <span style="font-size:11px">35 tok/s · 17GB VRAM</span>
+      </div>
+      <div class="model-badge api" style="display:flex; justify-content:space-between; width:100%">
+        <span>☁️ DeepSeek V4-Flash (API)</span>
+        <span style="font-size:11px">~$0.14/M tokens</span>
+      </div>
+    </div>
+
+    <div style="font-size:12px; color:var(--muted); margin-bottom:8px">Requests (24 ชม.ล่าสุด)</div>
+    <div class="stats" style="grid-template-columns: 1fr 1fr 1fr">
+      <div class="stat"><div class="num" style="color:var(--purple)">847</div><div class="lbl">Local</div></div>
+      <div class="stat"><div class="num" style="color:var(--yellow)">132</div><div class="lbl">API</div></div>
+      <div class="stat"><div class="num" style="color:var(--green)">$0.02</div><div class="lbl">Cost วันนี้</div></div>
+    </div>
+  </div>
+
+  <!-- Jellyfin -->
+  <div class="card">
+    <div class="card-title">
+      <span>📺 Jellyfin Media</span>
+      <span class="pill green"><span class="dot"></span> Streaming</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px">
+      <div style="background:var(--card2); border-radius:8px; padding:10px; text-align:center">
+        <div style="font-size:24px">🎬</div>
+        <div style="font-size:20px; font-weight:800; color:var(--green)">18</div>
+        <div style="font-size:11px; color:var(--muted)">วิดีโอไทย</div>
+      </div>
+      <div style="background:var(--card2); border-radius:8px; padding:10px; text-align:center">
+        <div style="font-size:24px">🎧</div>
+        <div style="font-size:20px; font-weight:800; color:var(--cyan)">20</div>
+        <div style="font-size:11px; color:var(--muted)">Podcast ไทย</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px; color:var(--muted); margin-bottom:6px">▶️ กำลังเล่น</div>
+    <div style="background:var(--card2); border-radius:8px; padding:10px; font-size:13px">
+      <div style="font-weight:600">Claude Mastery 1.2 — Download Claude</div>
+      <div style="color:var(--muted); font-size:11px; margin-top:2px">NoeAI · ความคืบหน้า 3:24 / 8:15</div>
+      <div class="bar" style="margin-top:6px"><div class="bar-fill" style="width:42%; background:var(--red)"></div></div>
+    </div>
+  </div>
+
+  <!-- Tolaria Vault -->
+  <div class="card">
+    <div class="card-title">
+      <span>🧠 Tolaria Vault</span>
+      <span class="pill green"><span class="dot"></span> Synced</span>
+    </div>
+
+    <div class="vault-tree">
+      <div class="folder">📁 ThaiSub Brain/</div>
+      <div style="padding-left:16px">
+        <div><span class="file">📊 ThaiSub Brain.md</span> <span class="count">— Dashboard</span></div>
+        <div class="folder">📁 Courses/</div>
+        <div style="padding-left:16px">
+          <div><span class="file">📂 AI-Automations/</span> <span class="count">6 notes</span></div>
+          <div><span class="file">📂 NoeAI/</span> <span class="count">12 notes</span></div>
+          <div><span class="file">📂 Google-Ads/</span> <span class="count">0 notes</span></div>
+        </div>
+        <div class="folder">📁 YouTube/</div>
+        <div><span class="file">📄 AGENTS.md</span></div>
+      </div>
+    </div>
+
+    <div class="stats" style="margin-top:12px">
+      <div class="stat"><div class="num" style="color:var(--purple)">23</div><div class="lbl">Notes</div></div>
+      <div class="stat"><div class="num" style="color:var(--orange)">6.1MB</div><div class="lbl">Size</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ROW 4: QUICK ACTIONS + COST ====== -->
+<div class="grid row4">
+
+  <!-- Quick Actions -->
+  <div class="card">
+    <div class="card-title">
+      <span>⚡ Quick Actions — สั่งงานทาง Telegram</span>
+    </div>
+    <div class="actions">
+      <button class="btn primary">📰 สรุปข่าววันนี้</button>
+      <button class="btn">🎬 แปลคอร์สต่อ (batch 5 ตอน)</button>
+      <button class="btn">🧠 เปิด vLLM (Qwen3-30B)</button>
+      <button class="btn">🔍 RAG ถามคำถาม</button>
+      <button class="btn">🎙️ สร้าง Podcast ไทย</button>
+      <button class="btn">📤 Deploy thaisub.vercel.app</button>
+      <button class="btn">🔄 Sync Tolaria Vault</button>
+      <button class="btn">📊 สถานะระบบ (full report)</button>
+    </div>
+  </div>
+
+  <!-- Cost Tracker -->
+  <div class="card">
+    <div class="card-title">
+      <span>💰 Cost Tracker — สิงหาคม 2026</span>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="font-size:32px; font-weight:800; color:var(--green)">$1.87</div>
+      <div style="font-size:12px; color:var(--muted)">รวมค่าใช้จ่ายเดือนนี้ (~66 บาท)</div>
+    </div>
+
+    <div class="spec-row">
+      <span class="label">☁️ DeepSeek API</span>
+      <span class="val" style="color:var(--yellow)">$1.24</span>
+    </div>
+    <div class="spec-row">
+      <span class="label">🖥️ ค่าไฟ (Mac mini 24/7)</span>
+      <span class="val" style="color:var(--orange)">$0.45</span>
+    </div>
+    <div class="spec-row">
+      <span class="label">🖥️ ค่าไฟ (FUSION-CORE on-demand)</span>
+      <span class="val" style="color:var(--orange)">$0.18</span>
+    </div>
+    <div class="spec-row">
+      <span class="label">📉 vs. ถ้า self-host 24/7</span>
+      <span class="val" style="color:var(--red)">ประหยัด $26+</span>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  FUSION-CORE Command Center · v1.0 · Powered by Hermes Agent + Tolaria + 3-Machine AI Cluster<br>
+  <span style="color:var(--green)">●</span> All 3 nodes online · <span style="color:var(--cyan)">●</span> Telegram Bot connected · <span style="color:var(--purple)">●</span> MCP servers active
+</div>
+
+<script>
+  // Live clock
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s} ICT`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+</script>
+
+</body>
+</html>
