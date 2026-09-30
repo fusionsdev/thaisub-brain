@@ -1,6 +1,6 @@
 # YouTube — วิดีโอเดี่ยวแปลไทย
 
-ทั้งหมด 337 คลิป
+ทั้งหมด 343 คลิป
 
 - [[zyjCF_TaLlg]]
 - [[zm_zJR6jx8U]]
@@ -85,6 +85,7 @@
 - [[lG-TFEZwywc]]
 - [[l5r6PX02sA8]]
 - [[kq4aTIga-XQ]]
+- [[knhJAP5DrtM]]
 - [[kgADg_555Ak]]
 - [[kO16oGNDDcc]]
 - [[kK8_neOySek]]
@@ -99,6 +100,7 @@
 - [[in7yrPuOqDw]]
 - [[iUFIpLEeiQw]]
 - [[iUDuN9dyuTY]]
+- [[iPZ0lNxeEYo]]
 - [[iDVZ7RNbOAQ]]
 - [[i8tf1YB40Mg]]
 - [[hiBWWGMGs0s]]
@@ -171,6 +173,7 @@
 - [[UVEjThz8DSo]]
 - [[UFi6mFTbytQ]]
 - [[U7rrce-dwqI]]
+- [[U5Im821Mn7Y]]
 - [[Tv8mLrLtyxo]]
 - [[Tg-6_3iFYPs]]
 - [[TfD0sMJGt2M]]
@@ -188,6 +191,7 @@
 - [[RnxXr_2ix3k]]
 - [[ROHgM8uV_8M]]
 - [[R1TNGOZAOZs]]
+- [[QzEZ6L4Zj7E]]
 - [[QnYEeOy86Kg]]
 - [[QnXkRrzXizU]]
 - [[QkbnLF482Ig]]
@@ -212,6 +216,7 @@
 - [[NLLkx3c2Xdo]]
 - [[N7Hkqznvc7I]]
 - [[N2Ogvx_U8uM]]
+- [[Mg7kPmE9Evs]]
 - [[M_zdWSZ-yBI]]
 - [[MVw-eg5BI_Q]]
 - [[MOgMbcY1U6E]]
@@ -284,6 +289,7 @@
 - [[8t6KtrgFvg4]]
 - [[8mlDqA8HLeE]]
 - [[8lpG59eugF8]]
+- [[8RX8ifDrAnY]]
 - [[8OxkpeAQ_qc]]
 - [[7j3uSBMFy9U]]
 - [[7eJmY2K_pK8]]
