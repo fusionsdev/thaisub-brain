@@ -1,6 +1,6 @@
 # YouTube — วิดีโอเดี่ยวแปลไทย
 
-ทั้งหมด 395 คลิป
+ทั้งหมด 397 คลิป
 
 - [[zyjCF_TaLlg]]
 - [[zyjCF_TaLgg]]
@@ -51,6 +51,8 @@
 - [[sI38zJNWjXM]]
 - [[rlqBbtQFEro]]
 - [[rXuJ90FV9Y0]]
+- [[rALt5ZfI6VU_imported]]
+- [[rALt5ZfI6VU]]
 - [[r3GDPvlVZXg]]
 - [[qeMyzsZ_4_I]]
 - [[qHjg_SmvDaM]]
